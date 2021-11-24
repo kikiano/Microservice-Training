@@ -126,14 +126,13 @@ public class Connector {
 
 	public boolean existById(int id){
 		QueryJobConfiguration config = QueryJobConfiguration.
-				newBuilder("SELECT orderId FROM thd_dataset123.Orders " +
+				newBuilder("SELECT * FROM thd_dataset123.Orders " +
 						"WHERE orderID = " + id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
 		try {
 			job = job.waitFor();
-			TableResult result = job.getQueryResults();
-			return result != null;
+			return job != null;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
