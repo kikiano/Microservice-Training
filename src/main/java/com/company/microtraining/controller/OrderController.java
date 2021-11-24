@@ -29,7 +29,10 @@ public class OrderController {
 
 	@GetMapping("/getOrder/{id}")
 	public ResponseEntity<?> readById(@PathVariable int id){
-		return new ResponseEntity<>(service.findOrderById(id),HttpStatus.OK);
+		if(service.exitsById(id)){
+			return new ResponseEntity<>(service.findOrderById(id),HttpStatus.OK);
+		}
+		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
 	}
 
 	@PutMapping(value = "/updateOrder/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
