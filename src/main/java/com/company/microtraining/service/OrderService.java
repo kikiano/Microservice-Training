@@ -15,23 +15,28 @@ public class OrderService {
 		this.connector = connector;
 	}
 	
-	public String test(Order order) throws InterruptedException {
-		return connector.register(order);
+	public String createOrder(Order order){
+		return connector.create(order);
 	}
 	
-	public List<Order> getAllOrders() throws InterruptedException {
+	public List<Order> getAllOrders() {
 		return connector.getAllOrders();
 	}
 	
-	public Order findOrderById(int id) throws InterruptedException {
+	public Order findOrderById(int id) {
 		return connector.findOrderById(id);
 	}
 	
-	public String deleteOrderbyId(int id) throws InterruptedException {
-		return connector.deleteOrderById(id);
+	public String deleteById(int id) {
+		return connector.deleteById(id);
 	}
 	
-	public String updateOrder(int id,Order order) throws InterruptedException {
+	public String updateOrder(int id,Order order) {
 		return connector.update(id, order);
 	}
+
+	public boolean exitsById(int id){
+		return connector.existById(id);
+	}
+
 }

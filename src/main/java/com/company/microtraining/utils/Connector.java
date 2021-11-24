@@ -12,104 +12,130 @@ import com.google.cloud.bigquery.*;
 
 @Component
 public class Connector {
-	private BigQuery bigQuery;
+
+	private final BigQuery bigQuery;
 
 	public Connector() {
 		bigQuery = BigQueryOptions.getDefaultInstance().getService();
 	}
-	
-	//QUERY : INSERT INTO thd_dataset123.Orders (orderID,orderSkus,orderDestination,orderQuantity,orderStatus) values (1,"123,245","Guadalajara",12,"ok")
-	//Lista a string: String.join(DELIMITER,LISTA)
-	//String a lista: String.split(Arrays.asList(string.split(DELIMITADOR))
-	public String register(Order order) throws InterruptedException {
+
+	public String create(Order order)  {
 		QueryJobConfiguration config = QueryJobConfiguration.
-				newBuilder("INSERT INTO thd_dataset123.Orders (orderId,orderSkus,orderDestination,orderQuantity,orderStatus) "
+				newBuilder("INSERT INTO thd_dataset123.Orders " +
+						"(orderId,orderSkus,orderDestination,orderQuantity,orderStatus) "
 						+ "VALUES ("+order.getOrderId()+
 						", '"+order.getOrderSkus().toString()+"'"+
 						", '"+order.getOrderDestination()+"'"+
 						","+order.getOrderQuantity()+
 						", '"+order.getOrderStatus()+"')").build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
-		
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
-		job = job.waitFor();
-		return "Done!";
+		try {
+			job = job.waitFor();
+			return "DONE";
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
-	public List<Order> getAllOrders() throws InterruptedException{
-		
+	public List<Order> getAllOrders(){
 		List<Order> allOrders = new ArrayList<>();
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("SELECT * FROM thd_dataset123.Orders").build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
-		
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
-		job = job.waitFor();
-		
-		TableResult result = job.getQueryResults();
-		
-		
-		for(FieldValueList row : result.iterateAll()) {
-			int orderId = (int) row.get("orderId").getLongValue();
-			String orderSkus = row.get("orderSkus").getStringValue();
-			String orderDestination = row.get("orderDestination").getStringValue();
-			int orderQuantity = (int) row.get("orderQuantity").getLongValue();
-			String orderStatus = row.get("orderStatus").getStringValue();
-			
-			List<String>skusList = new ArrayList<String>(Arrays.asList(orderSkus.split(",")));
-			
-			allOrders.add(new Order(orderId,skusList,orderDestination,orderQuantity,orderStatus));
+		try{
+			job = job.waitFor();
+			TableResult result = job.getQueryResults();
+			for(FieldValueList row : result.iterateAll()) {
+				int orderId = (int) row.get("orderId").getLongValue();
+				String orderSkus = row.get("orderSkus").getStringValue();
+				String orderDestination = row.get("orderDestination").getStringValue();
+				int orderQuantity = (int) row.get("orderQuantity").getLongValue();
+				String orderStatus = row.get("orderStatus").getStringValue();
+				List<String>skusList = new ArrayList<>(Arrays.asList(orderSkus.split(",")));
+				allOrders.add(new Order(orderId,skusList,orderDestination,orderQuantity,orderStatus));
+			}
+		}catch (InterruptedException e){
+			e.printStackTrace();
 		}
-		
 		return allOrders;
 	}
 	
-	public Order findOrderById(int id) throws InterruptedException {
-		Order order = new Order();
+	public Order findOrderById(int id) {
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("SELECT * FROM thd_dataset123.Orders WHERE orderId = " + id).build();
-		JobId jobId= JobId.of(UUID.randomUUID().toString());
-		
+		JobId jobId = JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
-		job = job.waitFor();
-		
-		TableResult result = job.getQueryResults();
-		
-		
-		for(FieldValueList row : result.iterateAll()) {
-			order.setOrderId((int) row.get("orderId").getLongValue());
-			List<String>skusList = new ArrayList<String>(Arrays.asList(row.get("orderSkus").getStringValue().split(",")));
-			order.setOrderSkus(skusList);
-			order.setOrderDestination(row.get("orderDestination").getStringValue());
-			order.setOrderQuantity((int) row.get("orderQuantity").getLongValue());
-			order.setOrderStatus(row.get("orderStatus").getStringValue());
+		try {
+			job = job.waitFor();
+			TableResult result = job.getQueryResults();
+			if(!(result == null)){
+				Order order = new Order();
+				for(FieldValueList row : result.iterateAll()) {
+					order.setOrderId((int) row.get("orderId").getLongValue());
+					List<String>skusList = new ArrayList<>(Arrays.asList(row.get("orderSkus").getStringValue().split(",")));
+					order.setOrderSkus(skusList);
+					order.setOrderDestination(row.get("orderDestination").getStringValue());
+					order.setOrderQuantity((int) row.get("orderQuantity").getLongValue());
+					order.setOrderStatus(row.get("orderStatus").getStringValue());
+				}
+				return order;
+			}
+		}catch (InterruptedException e){
+			e.printStackTrace();
 		}
-		
-		return order;
+		return null;
 	}
 	
-	public String deleteOrderById(int id) throws InterruptedException {
+	public String deleteById(int id){
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("DELETE FROM thd_dataset123.Orders WHERE orderId = "+ id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
-		
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
-		job = job.waitFor();
-		return "Order deleted!";
+		try{
+			job = job.waitFor();
+			return "Order deleted!";
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
-	public String update(int id,Order order) throws InterruptedException {
+	public String update(int id,Order order)  {
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("UPDATE thd_dataset123.Orders "
-						+ "SET orderStatus = '"+order.getOrderStatus().toString()+
+						+ "SET orderStatus = '"+order.getOrderStatus()+
 						"','"+order.getOrderDestination()+
 						"',"+order.getOrderQuantity()+",'"+order.getOrderStatus()+"')"
 						+ "WHERE orderId = " + id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
-		
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
-		job = job.waitFor();
-		return "Order updated!";
+		try {
+			job = job.waitFor();
+			TableResult result = job.getQueryResults();
+			return "Order updated!";
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
+		return null;
 	}
-	
+
+	public boolean existById(int id){
+		QueryJobConfiguration config = QueryJobConfiguration.
+				newBuilder("SELECT orderId FROM thd_dataset123.Orders " +
+						"WHERE orderID = " + id).build();
+		JobId jobId= JobId.of(UUID.randomUUID().toString());
+		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
+		try {
+			job = job.waitFor();
+			TableResult result = job.getQueryResults();
+			return result != null;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

@@ -1,56 +1,45 @@
 package com.company.microtraining.controller;
 
-import java.util.List;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.company.microtraining.model.Order;
 import com.company.microtraining.service.OrderService;
 
 @RestController
 public class OrderController {
-	private OrderService service;
+
+	private final OrderService service;
 
 	public OrderController(OrderService service) {
 		this.service = service;
 	}
-	
-	@GetMapping("/test")
-	public String test() {
-		return "it work! :)";
+
+	@PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> create(@RequestBody Order order) {
+		return new ResponseEntity<>(service.createOrder(order),HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getAllOrders")
-	public List<Order> getAllOrders() throws InterruptedException {
-		return service.getAllOrders();
+	public ResponseEntity<?> read(){
+		return new ResponseEntity<>(service.getAllOrders(), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getOrder/{id}")
-	public Order getOrder(@PathVariable int id) throws InterruptedException {
-		return service.findOrderById(id);
+	public ResponseEntity<?> readById(@PathVariable int id){
+		return new ResponseEntity<>(service.findOrderById(id),HttpStatus.OK);
 	}
-	
-	@PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-	public String save(@RequestBody Order order) throws InterruptedException {
-		return service.test(order);
-	}
-	
-	@PostMapping(value = "/updateOrder/{id}", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-	public String updateOrderById(@PathVariable int id, @RequestBody Order order) throws InterruptedException {
-		return service.updateOrder(id, order);
+
+	@PutMapping(value = "/updateOrder/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateOrderById(@PathVariable int id, @RequestBody Order order) {
+		return new ResponseEntity<>(service.updateOrder(id,order), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/deleteOrder/{id}")
-	public String deleteOrderById(@PathVariable int id) throws InterruptedException {
-		return service.deleteOrderbyId(id);
+	public ResponseEntity<?> deleteOrderById(@PathVariable int id) {
+		return new ResponseEntity<>(service.deleteById(id), HttpStatus.OK);
 	}
 	
 	
