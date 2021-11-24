@@ -1,9 +1,6 @@
 package com.company.microtraining.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.stereotype.Component;
 
@@ -70,18 +67,22 @@ public class Connector {
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
 		try {
 			job = job.waitFor();
-			TableResult result = job.getQueryResults();
-			if(!(result == null)){
-				Order order = new Order();
-				for(FieldValueList row : result.iterateAll()) {
-					order.setOrderId((int) row.get("orderId").getLongValue());
-					List<String>skusList = new ArrayList<>(Arrays.asList(row.get("orderSkus").getStringValue().split(",")));
-					order.setOrderSkus(skusList);
-					order.setOrderDestination(row.get("orderDestination").getStringValue());
-					order.setOrderQuantity((int) row.get("orderQuantity").getLongValue());
-					order.setOrderStatus(row.get("orderStatus").getStringValue());
+			if(job == null) {
+				throw new NoSuchElementException();
+			}else{
+				TableResult result = job.getQueryResults();
+				if(!(result == null)){
+					Order order = new Order();
+					for(FieldValueList row : result.iterateAll()) {
+						order.setOrderId((int) row.get("orderId").getLongValue());
+						List<String>skusList = new ArrayList<>(Arrays.asList(row.get("orderSkus").getStringValue().split(",")));
+						order.setOrderSkus(skusList);
+						order.setOrderDestination(row.get("orderDestination").getStringValue());
+						order.setOrderQuantity((int) row.get("orderQuantity").getLongValue());
+						order.setOrderStatus(row.get("orderStatus").getStringValue());
+					}
+					return order;
 				}
-				return order;
 			}
 		}catch (InterruptedException e){
 			e.printStackTrace();
