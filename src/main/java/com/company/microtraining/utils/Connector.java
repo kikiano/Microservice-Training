@@ -107,8 +107,9 @@ public class Connector {
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("UPDATE thd_dataset123.Orders "
 						+ "SET orderStatus = '"+order.getOrderStatus()+
-						"','"+order.getOrderDestination()+
-						"',"+order.getOrderQuantity()+",'"+order.getOrderStatus()+"')"
+						"',orderDestination='"+order.getOrderDestination()+
+						"',orderQuantity="+order.getOrderQuantity()+
+						", orderStatus ='"+order.getOrderStatus()+"'"
 						+ "WHERE orderId = " + id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
