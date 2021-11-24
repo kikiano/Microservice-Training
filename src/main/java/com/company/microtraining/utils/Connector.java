@@ -24,7 +24,11 @@ public class Connector {
 	public String register(Order order) throws InterruptedException {
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("INSERT INTO thd_dataset123.Orders (orderId,orderSkus,orderDestination,orderQuantity,orderStatus) "
-						+ "VALUES (4,'124,124','Queretaro',46,'ok')").build();
+						+ "VALUES ("+order.getOrderId()+
+						", '"+order.getOrderSkus().toString()+"'"+
+						", '"+order.getOrderDestination()+"'"+
+						","+order.getOrderQuantity()+
+						", '"+order.getOrderStatus()+"')").build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
@@ -97,7 +101,9 @@ public class Connector {
 	public String update(int id,Order order) throws InterruptedException {
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("UPDATE thd_dataset123.Orders "
-						+ "SET orderStatus = 'delivered' "
+						+ "SET orderStatus = '"+order.getOrderStatus().toString()+
+						"','"+order.getOrderDestination()+
+						"',"+order.getOrderQuantity()+",'"+order.getOrderStatus()+"')"
 						+ "WHERE orderId = " + id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		
