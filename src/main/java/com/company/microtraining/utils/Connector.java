@@ -29,10 +29,13 @@ public class Connector {
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
 		try {
 			job = job.waitFor();
+			//TODO correct the return string
 			return "DONE";
 		}catch (InterruptedException e){
+			//TODO add logger sentence
 			e.printStackTrace();
 		}
+		//TODO correct the usage of the null
 		return null;
 	}
 	
@@ -91,6 +94,8 @@ public class Connector {
 	}
 	
 	public String deleteById(int id){
+		//TODO check if the ordernumber exists
+		//TODO modify the returning String
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("DELETE FROM thd_dataset123.Orders WHERE orderId = "+ id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
@@ -105,6 +110,8 @@ public class Connector {
 	}
 	
 	public String update(int id,Order order)  {
+		//TODO update the logic
+		//TODO modify the returning String
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("UPDATE thd_dataset123.Orders "
 						+ "SET orderStatus = '"+order.getOrderStatus()+
@@ -126,13 +133,14 @@ public class Connector {
 
 	public boolean existById(int id){
 		QueryJobConfiguration config = QueryJobConfiguration.
-				newBuilder("SELECT * FROM thd_dataset123.Orders " +
+				newBuilder("SELECT orderId FROM thd_dataset123.Orders " +
 						"WHERE orderID = " + id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
 		try {
 			job = job.waitFor();
-			return job != null;
+			TableResult result = job.getQueryResults();
+			return result != null;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

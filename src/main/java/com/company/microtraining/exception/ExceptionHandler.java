@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ExceptionHandler {
-
+	//TODO change response length
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> methodArgumentHandler(MethodArgumentTypeMismatchException ex){
         return new ResponseEntity<>("NOT A VALID PARAM INPUT. MUST BE A NUMBER", HttpStatus.BAD_REQUEST);
