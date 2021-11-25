@@ -38,7 +38,7 @@ public class Connector {
 		//TODO correct the usage of the null
 		return null;
 	}
-	
+
 	public List<Order> getAllOrders(){
 		List<Order> allOrders = new ArrayList<>();
 		QueryJobConfiguration config = QueryJobConfiguration.
@@ -62,7 +62,7 @@ public class Connector {
 		}
 		return allOrders;
 	}
-	
+
 	public Order findOrderById(int id) {
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("SELECT * FROM thd_dataset123.Orders WHERE orderId = " + id).build();
@@ -71,28 +71,26 @@ public class Connector {
 		try {
 			job = job.waitFor();
 			if(job == null) {
-				throw new NoSuchElementException();
+				return null;
 			}else{
 				TableResult result = job.getQueryResults();
-				if(!(result == null)){
-					Order order = new Order();
-					for(FieldValueList row : result.iterateAll()) {
-						order.setOrderId((int) row.get("orderId").getLongValue());
-						List<String>skusList = new ArrayList<>(Arrays.asList(row.get("orderSkus").getStringValue().split(",")));
-						order.setOrderSkus(skusList);
-						order.setOrderDestination(row.get("orderDestination").getStringValue());
-						order.setOrderQuantity((int) row.get("orderQuantity").getLongValue());
-						order.setOrderStatus(row.get("orderStatus").getStringValue());
-					}
-					return order;
+				Order order = new Order();
+				for(FieldValueList row : result.iterateAll()) {
+					order.setOrderId((int) row.get("orderId").getLongValue());
+					List<String>skusList = new ArrayList<>(Arrays.asList(row.get("orderSkus").getStringValue().split(",")));
+					order.setOrderSkus(skusList);
+					order.setOrderDestination(row.get("orderDestination").getStringValue());
+					order.setOrderQuantity((int) row.get("orderQuantity").getLongValue());
+					order.setOrderStatus(row.get("orderStatus").getStringValue());
 				}
+				return order;
 			}
 		}catch (InterruptedException e){
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	public String deleteById(int id){
 		//TODO check if the ordernumber exists
 		//TODO modify the returning String
@@ -108,7 +106,7 @@ public class Connector {
 		}
 		return null;
 	}
-	
+
 	public String update(int id,Order order)  {
 		//TODO update the logic
 		//TODO modify the returning String
