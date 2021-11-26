@@ -55,6 +55,9 @@ public class Order {
 			e.printStackTrace();
 		}
 	}
+	public String getCurrentDate(Date date){
+		return new SimpleDateFormat("yyyy-MM-dd").format(date);
+	}
 	public long getOrderQuantity() {
 		return orderQuantity;
 	}

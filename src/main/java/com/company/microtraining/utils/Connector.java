@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -31,7 +30,7 @@ public class Connector {
 						", '"+order.getOrderDestination()+"'"+
 						","+order.getOrderQuantity()+
 						", '"+order.getOrderStatus()+"'"+
-						", '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"'"+")").build();
+						", '"+order.getCurrentDate(order.getDate())+"'"+")").build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
 		LOGGER.trace("QUERY: " + config.getQuery());
@@ -132,7 +131,8 @@ public class Connector {
 						+ "SET orderSkus = '"+order.getOrderSkus().toString().substring(1, order.getOrderSkus().toString().length()-1)+
 						"',orderDestination='"+order.getOrderDestination()+
 						"',orderQuantity="+order.getOrderQuantity()+
-						", orderStatus ='"+order.getOrderStatus()+"'"
+						", orderStatus ='"+order.getOrderStatus()+"'"+
+						" , orderDate = '"+order.getCurrentDate(order.getDate())+"'"
 						+ "WHERE orderId = " + order.getOrderId()).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
