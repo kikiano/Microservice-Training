@@ -55,9 +55,11 @@ public class Order {
 		try {
 			this.date = new SimpleDateFormat("yyyy-MM-dd").parse(date);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public String currentDate(Date time) {
+		return new SimpleDateFormat("yyyy-MM-dd").format(time);
 	}
 	public long getOrderQuantity() {
 		return orderQuantity;

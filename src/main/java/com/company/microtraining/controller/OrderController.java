@@ -23,6 +23,7 @@ public class OrderController {
 
 	@PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> create(@RequestBody Order order) {
+		logger.info("Object Created");
 		return new ResponseEntity<>(service.createOrder(order),HttpStatus.OK);
 	}
 
@@ -34,9 +35,10 @@ public class OrderController {
 	@GetMapping("/getOrder/{id}")
 	public ResponseEntity<?> readById(@PathVariable int id){
 		if(service.exitsById(id)){
-			logger.debug("A TRACE Message");
+			logger.info("A TRACE Message");
 			return new ResponseEntity<>(service.findOrderById(id),HttpStatus.OK);
 		}//TODO change the return sentence
+		logger.error("NOT A VALID ID");
 		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
 	}
 

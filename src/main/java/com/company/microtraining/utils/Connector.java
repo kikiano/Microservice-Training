@@ -1,7 +1,5 @@
 package com.company.microtraining.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.springframework.stereotype.Component;
@@ -29,19 +27,17 @@ public class Connector {
 						", '"+order.getOrderDestination()+"'"+
 						","+order.getOrderQuantity()+
 						", '"+order.getOrderStatus()+"'"+
-						", '"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"'"+")").build();
+						", '"+order.currentDate(order.getDate())+"'"+")").build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
 		try {
 			job = job.waitFor();
-			//TODO correct the return string
 			return "The order with the orderID: " +order.getOrderId()+" has been created";
 		}catch (InterruptedException e){
 			//TODO add logger sentence
 			e.printStackTrace();
+			return null;
 		}
-		//TODO correct the usage of the null
-		return null;
 	}
 
 	public List<Order> getAllOrders(){
@@ -65,10 +61,12 @@ public class Connector {
 				myOrder.setDate(row.get("orderDate").getStringValue());
 				allOrders.add(myOrder);
 			}
+			return allOrders;
 		}catch (InterruptedException e){
 			e.printStackTrace();
+			return null;
 		}
-		return allOrders;
+		
 	}
 
 	public Order findOrderById(int id) {
@@ -92,10 +90,9 @@ public class Connector {
 					order.setOrderStatus(row.get("orderStatus").getStringValue());
 					order.setDate(row.get("orderDate").getStringValue());
 				}
-				
 				return order;				
 			}
-		}catch (InterruptedException /*| ParseException*/ e){
+		}catch (InterruptedException e){
 			e.printStackTrace();
 			return null;
 		}
@@ -103,7 +100,6 @@ public class Connector {
 	}
 
 	public String deleteById(int id){
-		//TODO modify the returning String
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("DELETE  FROM thd_dataset123.Orders WHERE orderId = "+ id).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
@@ -120,13 +116,13 @@ public class Connector {
 	}
 
 	public String update(Order order)  {
-		//TODO modify the returning String
 		QueryJobConfiguration config = QueryJobConfiguration.
 				newBuilder("UPDATE thd_dataset123.Orders "
 						+ "SET orderSkus = '"+order.getOrderSkus().toString().substring(1, order.getOrderSkus().toString().length()-1)+
-						"',orderDestination='"+order.getOrderDestination()+
-						"',orderQuantity="+order.getOrderQuantity()+
-						", orderStatus ='"+order.getOrderStatus()+"'"
+						"', orderDestination='"+order.getOrderDestination()+
+						"', orderQuantity="+order.getOrderQuantity()+
+						" , orderStatus ='"+order.getOrderStatus()+"'"+
+						" , orderDate = '"+order.currentDate(order.getDate())+"'"
 						+ "WHERE orderId = " + order.getOrderId()).build();
 		JobId jobId= JobId.of(UUID.randomUUID().toString());
 		Job job = bigQuery.create(JobInfo.newBuilder(config).setJobId(jobId).build());
@@ -160,7 +156,7 @@ public class Connector {
 			}
 		}catch(Exception e) {
 			//TODO cachar la exception por logger en lugar de printstacktrace
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return false;
 	}
