@@ -6,6 +6,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -29,6 +30,11 @@ public class OrderExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> messageNotReadbleHandler(HttpMessageNotReadableException ex){
         return new ResponseEntity<>("NOT A VALID INPUT. MUST BE A INTEGER", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> noValuesInDBHandler(IllegalStateException ex){
+        return new ResponseEntity<>("NO DATA IN DB", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
