@@ -1,11 +1,10 @@
 package com.company.microtraining.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.company.microtraining.model.Order;
 import com.company.microtraining.utils.Connector;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OrderService {

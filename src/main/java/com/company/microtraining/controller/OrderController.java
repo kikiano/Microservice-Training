@@ -1,20 +1,15 @@
 package com.company.microtraining.controller;
 
+import com.company.microtraining.model.Order;
+import com.company.microtraining.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.company.microtraining.model.Order;
-import com.company.microtraining.service.OrderService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RestController
 public class OrderController {
-	
-	private Logger logger = LoggerFactory.getLogger(OrderController.class);
+
 	private final OrderService service;
 
 	public OrderController(OrderService service) {
@@ -34,9 +29,8 @@ public class OrderController {
 	@GetMapping("/getOrder/{id}")
 	public ResponseEntity<?> readById(@PathVariable int id){
 		if(service.exitsById(id)){
-			logger.debug("A TRACE Message");
 			return new ResponseEntity<>(service.findOrderById(id),HttpStatus.OK);
-		}//TODO change the return sentence
+		}
 		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
 	}
 
@@ -51,12 +45,9 @@ public class OrderController {
 	
 	@DeleteMapping("/deleteOrder/{id}")
 	public ResponseEntity<?> deleteOrderById(@PathVariable int id) {
-		if(service.exitsById(id)) {
+		if (service.exitsById(id)) {
 			return new ResponseEntity<>(service.deleteById(id), HttpStatus.OK);
 		}
 		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
 	}
-	
-	
-	
 }

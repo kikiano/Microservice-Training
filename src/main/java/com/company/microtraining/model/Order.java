@@ -1,17 +1,13 @@
 package com.company.microtraining.model;
 
+import lombok.Data;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Order {
 	private int orderId;
 	private List<String> orderSkus;
@@ -19,6 +15,7 @@ public class Order {
 	private Date date;
 	private long orderQuantity;
 	private String orderStatus;
+
 	public Order(int orderId, List<String> orderSkus, String orderDestination, Date date, long orderQuantity,
 			String orderStatus) {
 		this.orderId = orderId;
@@ -55,7 +52,6 @@ public class Order {
 		try {
 			this.date = new SimpleDateFormat("yyyy-MM-dd").parse(date);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -70,5 +66,16 @@ public class Order {
 	}
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+	@Override
+	public String toString() {
+		return "Order{" +
+				"orderId=" + orderId +
+				", orderSkus=" + orderSkus +
+				", orderDestination='" + orderDestination + '\'' +
+				", date=" + date +
+				", orderQuantity=" + orderQuantity +
+				", orderStatus='" + orderStatus + '\'' +
+				'}';
 	}
 }
