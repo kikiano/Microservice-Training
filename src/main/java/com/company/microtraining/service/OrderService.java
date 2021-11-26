@@ -31,8 +31,8 @@ public class OrderService {
 		return connector.deleteById(id);
 	}
 	
-	public String updateOrder(int id,Order order) {
-		return connector.update(id, order);
+	public String updateOrder(Order order) {
+		return connector.update(order);
 	}
 
 	public boolean exitsById(int id){

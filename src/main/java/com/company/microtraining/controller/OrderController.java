@@ -8,9 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import com.company.microtraining.model.Order;
 import com.company.microtraining.service.OrderService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 public class OrderController {
-
+	
+	private Logger logger = LoggerFactory.getLogger(OrderController.class);
 	private final OrderService service;
 
 	public OrderController(OrderService service) {
@@ -30,19 +34,27 @@ public class OrderController {
 	@GetMapping("/getOrder/{id}")
 	public ResponseEntity<?> readById(@PathVariable int id){
 		if(service.exitsById(id)){
+			logger.debug("A TRACE Message");
 			return new ResponseEntity<>(service.findOrderById(id),HttpStatus.OK);
 		}//TODO change the return sentence
 		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
 	}
 
-	@PutMapping(value = "/updateOrder/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateOrderById(@PathVariable int id, @RequestBody Order order) {
-		return new ResponseEntity<>(service.updateOrder(id,order), HttpStatus.OK);
+	@PutMapping(value = "/updateOrder", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateOrderById(@RequestBody Order order) {
+		if(service.exitsById(order.getOrderId())) {
+			return new ResponseEntity<>(service.updateOrder(order), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
+		
 	}
 	
 	@DeleteMapping("/deleteOrder/{id}")
 	public ResponseEntity<?> deleteOrderById(@PathVariable int id) {
-		return new ResponseEntity<>(service.deleteById(id), HttpStatus.OK);
+		if(service.exitsById(id)) {
+			return new ResponseEntity<>(service.deleteById(id), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("NOT A VALID ID", HttpStatus.BAD_REQUEST);
 	}
 	
 	
